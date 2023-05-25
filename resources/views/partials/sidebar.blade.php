@@ -26,6 +26,14 @@
           Crea nuovo progetto
         </a>
       </li>
+
+      <li>
+        <a href="{{ route('admin.types.index') }}" class="nav-link text-white @if(Route::currentRouteName() == 'admin.types.index') active @endif">
+          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+          Tipologie
+        </a>
+      </li>
+
       
     </ul>
   </div>

@@ -51,7 +51,7 @@ class ProjectController extends Controller
         if($request->has('technologies')){
             $newProject->technologies()->attach($request->technologies);
         }
-        dd($request);
+        //dd($request);
         return redirect()->route('admin.projects.show', ['project'=> $newProject->slug])->with('status', 'Progetto creato con successo!');
     }
 
@@ -91,6 +91,13 @@ class ProjectController extends Controller
         
         $form_data = $request->validated();
         $form_data['slug'] = Str::slug($request->title, '-');
+
+        $checkPost = Project::where('slug', $form_data['slug'])->where('id', '<>', $project->id)->first();
+
+        if ($checkPost) {
+            return back()->withInput()->withErrors(['slug' => 'Impossibile creare lo slug']);
+        }
+
         $project->technologies()->sync($request->technologies);
         $project->update($form_data);
 
