@@ -2,7 +2,7 @@
 
 @section('content')
     <h3>Crea un nuovo progetto</h3>
-    <form action="{{ route('admin.projects.store') }}" method="POST">
+    <form action="{{ route('admin.projects.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -29,8 +29,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="cover_img" class="form-label">URL dell'immagine di copertina</label>
-            <input type="text" class="form-control @error('cover_img') is-invalid @enderror" id="cover_img" name="cover_img" value="{{ old('cover_img') }}">
+            <label for="cover_img" class="form-label">Scegli un'immagine di copertina</label>
+            <input type="file" class="form-control @error('cover_img') is-invalid @enderror" id="cover_img" name="cover_img">
             @error('cover_img')
                 <div class='invalid-feedback'>{{ $message }}</div>
             @enderror
@@ -54,7 +54,7 @@
 
         <div class="mb-3">
             <label for=""></label>
-            @foreach ($technologies as $technology)   
+            @foreach ($technologies as $technology)
                 <input id="technology_{{ $technology->id }}" @if (in_array($technology->id , old('technologies', []))) checked @endif type="checkbox" name="technologies[]"  value="{{ $technology->id }}">
                 <label for="technology_{{ $technology->id }}" class="form-label">{{ $technology->name }}</label>
                 <br>
@@ -63,6 +63,7 @@
                 <div class='invalid-feedback'>{{ $message }}</div>
             @enderror
         </div>
+        <a href="{{ route('admin.projects.index') }}" class="btn btn-primary">Torna alla lista dei progetti</a>
 
         <button class="btn btn-primary" type="submit">Crea nuovo progetto</button>
     </form>

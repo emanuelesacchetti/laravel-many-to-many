@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\Technology;
 use App\Models\Type;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -42,10 +43,19 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        
         $form_data = $request->validated();  //validated : restituisce un array associativo
         $form_data['slug'] = Str::slug($form_data['title'], '-');
-        
+
+        $checkPost = Project::where('slug', $form_data['slug'])->first();
+        if ($checkPost) {
+            return back()->withInput()->withErrors(['slug' => 'Impossibile creare lo slug per questo post, cambia il titolo']);
+        }
+
+        if($request->hasFile('cover_img')){
+            $path = Storage::put('cover', $request->cover_img);
+            $form_data['cover_img'] = $path;
+        }
+
         $newProject = Project::create($form_data);  //la create 1_stanzia il nuovo oggetto,2_fà sia la fill che 3_la save
 
         if($request->has('technologies')){
@@ -88,7 +98,7 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        
+
         $form_data = $request->validated();
         $form_data['slug'] = Str::slug($request->title, '-');
 
@@ -96,6 +106,22 @@ class ProjectController extends Controller
 
         if ($checkPost) {
             return back()->withInput()->withErrors(['slug' => 'Impossibile creare lo slug']);
+        }
+
+        //SE nei dati in arrivo dal form c'è un dato per cover_img (allora entro nell'if)
+        if($request->hasFile('cover_img')){
+
+            //SE esiste già un valore nel Database per cover_img
+            if($project->cover_img){
+                //ALLORA cancello il valore di cover_img dal Database
+                Storage::delete($project->cover_img);
+            }
+
+            //alla variabile $path dò come valore la path dell'immagine
+            $path = Storage::put('cover', $request->cover_img);
+            //al valore di cover_img dei dati del form dò il valore di $path
+            $form_data['cover_img'] = $path;
+
         }
 
         $project->technologies()->sync($request->technologies);

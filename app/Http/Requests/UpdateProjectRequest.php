@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProjectRequest extends FormRequest
 {
@@ -24,12 +25,12 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:150|unique:projects',
+            'title' => ['required', 'max:150', Rule::unique('projects')->ignore($this->project)],
             'content' => 'nullable|max:300',
             'date' => 'nullable|date',
-            'cover_img' => 'min:10|max:255|url',
+            'cover_img' => 'nullable|image|max:1024',
             'type_id' => 'nullable|exists:types,id',
-            'technologies' => 'exists:technologies,id'
+            'technologies' => 'nullable|exists:technologies,id'
 
         ];
     }
@@ -41,9 +42,8 @@ class UpdateProjectRequest extends FormRequest
             'title.max' => 'Il campo titolo può contenere al massimo 150 caratteri',
             'content.max' => 'La descrizione può contenere al massimo 300 caratteri',
             'date.date' => 'Inserire una data valida',
-            'cover_img.min' => 'Il capo Url dovrà essere di almeno 10 caratteri',
-            'cover_img.max' => 'Il capo Url dovrà essere di massimo 255 caratteri',
-            'cover_img.url' => 'Inserire un URL valido'
+            'cover_img.max' => 'Il file scelto è troppo grande',
+            'cover_img.image' => 'Il file selezionato è di un formato non supportato'
         ];
     }
 }

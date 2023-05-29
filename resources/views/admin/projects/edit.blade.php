@@ -2,7 +2,7 @@
 
 @section('content')
     <h3>Modifica questo progetto</h3>
-    <form action="{{ route('admin.projects.update', ['project'=> $project->slug]) }}" method="POST">
+    <form action="{{ route('admin.projects.update', ['project'=> $project->slug]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -30,8 +30,12 @@
         </div>
 
         <div class="mb-3">
-            <label for="cover_img" class="form-label">URL dell'immagine di copertina</label>
-            <input type="text" class="form-control @error('cover_img') is-invalid @enderror" id="cover_img" name="cover_img" value="{{ old('cover_img', $project->cover_img) }}">
+            <label for="cover_img" class="form-label">Cambia un'immagine di copertina</label>
+            @if ($project->cover_img)
+                <img src="{{ asset('storage/' . $project->cover_img)  }}" class="img-fluid d-block my_img_edit" alt="{{ $project->title }}">
+            @else
+                <input type="file" class="form-control @error('cover_img') is-invalid @enderror" id="cover_img" name="cover_img">
+            @endif
             @error('cover_img')
                 <div class='invalid-feedback'>{{ $message }}</div>
             @enderror
@@ -61,7 +65,7 @@
                     <input @if (in_array($technology->id, old('technologies', []))) checked @endif id="technology_{{ $technology->id }}" type="checkbox" name="technologies[]"  value="{{ $technology->id }}">
                 @else
                     <input @if ($project->technologies->contains($technology->id)) checked @endif id="technology_{{ $technology->id }}" type="checkbox" name="technologies[]"  value="{{ $technology->id }}">
-                @endif 
+                @endif
 
                 <label for="technology_{{ $technology->id }}" class="form-label">{{ $technology->name }}</label>
                 <br>
@@ -70,6 +74,7 @@
                 <div class='invalid-feedback'>{{ $message }}</div>
             @enderror
         </div>
+        <a href="{{ route('admin.projects.index') }}" class="btn btn-primary">Torna alla lista dei progetti</a>
 
         <button class="btn btn-primary" type="submit">Conferma modifica</button>
     </form>

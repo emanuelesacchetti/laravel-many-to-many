@@ -27,7 +27,11 @@
                         <th scope="row">{{ $project->id }}</th>
                         <td>{{ $project->title }}</td>
                         <td>{{ $project->type?->name }}</td>
-                        <td>{{ $project->cover_img }}</td>
+                        <td>
+                            @if ($project->cover_img)
+
+                            @endif
+                            <img src="{{ asset('storage/' . $project->cover_img) }}" class='my_img_index' alt=""></td>
                         <td>{{ $project->date }}</td>
                         <td>{{ $project->slug }}</td>
                         <td>
@@ -36,14 +40,14 @@
                             @endforeach
                         </td>
                         <td>
-                            <a class="btn btn-primary" href="{{ route('admin.projects.show', $project->slug) }}">VEDI</a>    
-                            <a class="btn btn-warning" href="{{ route('admin.projects.edit', $project->slug) }}">MODIFICA</a>  
+                            <a class="btn btn-primary" href="{{ route('admin.projects.show', $project->slug) }}">VEDI</a>
+                            <a class="btn btn-warning" href="{{ route('admin.projects.edit', $project->slug) }}">MODIFICA</a>
 
                             <form class="form_delete_project" action="{{route('admin.projects.destroy', ['project' => $project->slug])}}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger">Elimina</button>
-                            </form>    
+                            </form>
                         </td>
 
                     </tr>
